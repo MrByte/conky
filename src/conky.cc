@@ -981,7 +981,9 @@ static int text_size_updater(char *s, int special_index) {
       } else if (current->type == VOFFSET) {
         last_font_height += current->arg;
       } else if (current->type == GOTO) {
-        if (current->arg > cur_x) { w = static_cast<int>(current->arg); }
+        if (current->arg > cur_x) { w = static_cast<int>(current->arg);} 
+      } else if (current->type == GOTOY) {
+	if (current->arg > cur_y) { last_font_height = (int) current->arg;}
       } else if (current->type == TAB) {
         int start = current->arg;
         int step = current->width;
@@ -1518,6 +1520,15 @@ int draw_each_line_inner(char *s, int special_index, int last_special_applied) {
             for (auto output : display_outputs()) output->gotox(cur_x);
           }
           break;
+	case GOTOY:
+ 	  if (current->arg >= 0) {
+#ifdef BUILD_X11
+	    cur_y = (int) current->arg;
+					//make sure shades are 1 pixel to the bottom of the text
+	    if(draw_mode == BG) cur_y++;
+#endif /* BUILD_X11 */
+	}
+	 break;
       }
 
 #ifdef BUILD_GUI
